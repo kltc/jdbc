@@ -2,21 +2,21 @@ package fr.digi.d022024.jdbc.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import fr.digi.d022024.jdbc.entites.Fournisseur;
 
-public class FournisseurDaoJdbc implements FournisseurDao {
+public class FournisseurDaoJdbc2 implements FournisseurDao {
 
 	private static final String SELECT_QUERY = "SELECT * FROM FOURNISSEUR";
-	private static final String INSERT_QUERY = "INSERT INTO FOURNISSEUR(NOM) VALUES('%s')";
-	private static final String UPDATE_QUERY = "UPDATE FOURNISSEUR SET NOM = ('%s') WHERE NOM = ('%s')";
-	private static final String DELETE_QUERY = "DELETE FROM FOURNISSEUR WHERE NOM = ('%s')";
+	private static final String INSERT_QUERY = "INSERT INTO FOURNISSEUR(NOM) VALUES (?)";
+	private static final String UPDATE_QUERY = "UPDATE FOURNISSEUR SET NOM = ? WHERE NOM = ?";
+	private static final String DELETE_QUERY = "DELETE FROM FOURNISSEUR WHERE NOM = ?";
 
 	private static final String DB_URL;
 	private static final String DB_USER;
@@ -34,8 +34,8 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 	public List<Fournisseur> extraire() {
 
 		try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
-				Statement st = connection.createStatement();
-				ResultSet rs = st.executeQuery(SELECT_QUERY)) {
+				PreparedStatement st = connection.prepareStatement(SELECT_QUERY);
+				ResultSet rs = st.executeQuery()) {
 
 			List<Fournisseur> fournisseurs = new ArrayList<>();
 
@@ -59,11 +59,11 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 	public void insert(Fournisseur fournisseur) throws SQLException {
 
 		try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
-				Statement st = connection.createStatement();) {
+				PreparedStatement st = connection.prepareStatement(INSERT_QUERY);) {
 
 			// C -> Create
-			String query = String.format(INSERT_QUERY, fournisseur.getNom());
-			st.executeUpdate(query);
+			st.setString(1, fournisseur.getNom());
+			st.executeUpdate();
 		}
 	}
 
@@ -71,11 +71,12 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 	public int update(String ancienNom, String nouveauNom) throws SQLException {
 
 		try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
-				Statement st = connection.createStatement();) {
+				PreparedStatement st = connection.prepareStatement(UPDATE_QUERY);) {
 
 			// U -> Update
-			String query = String.format(UPDATE_QUERY, nouveauNom, ancienNom);
-			st.executeUpdate(query);
+			st.setString(1, nouveauNom);
+			st.setString(2, ancienNom);
+			st.executeUpdate();
 		}
 		return 0;
 	}
@@ -84,11 +85,11 @@ public class FournisseurDaoJdbc implements FournisseurDao {
 	public boolean delete(Fournisseur fournisseur) throws SQLException {
 
 		try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
-				Statement st = connection.createStatement();) {
+				PreparedStatement st = connection.prepareStatement(DELETE_QUERY);) {
 
 			// D -> Delete
-			String query = String.format(DELETE_QUERY, fournisseur.getNom());
-			st.executeUpdate(query);
+			st.setString(1, fournisseur.getNom());
+			st.executeUpdate();
 		}
 		return false;
 	}

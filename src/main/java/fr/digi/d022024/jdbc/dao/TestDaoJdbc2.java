@@ -2,7 +2,7 @@ package fr.digi.d022024.jdbc.dao;
 
 import fr.digi.d022024.jdbc.entites.Fournisseur;
 
-public class TestDaoJdbc {
+public class TestDaoJdbc2 {
 
 	public static void main(String[] args) {
 
@@ -29,8 +29,6 @@ public class TestDaoJdbc {
 //			dao.insert(new Fournisseur("L''Espace Création"));
 //
 //			System.out.println("---------");
-//
-//			dao.extraire();
 
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
